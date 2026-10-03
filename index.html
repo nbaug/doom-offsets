@@ -96,7 +96,45 @@ details[open] summary::after{content:"–"}
 .more p{margin:0}
 .more ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .more b{color:var(--ink);font-weight:600}
-@media (prefers-reduced-motion: reduce){.row .bar{transition:none}}
+
+/* Checkout */
+dialog{border:1px solid var(--ink);border-radius:6px;padding:0;background:var(--paper);color:var(--ink);width:min(30rem,calc(100vw - 32px));max-height:calc(100dvh - 32px);box-shadow:0 24px 60px -20px rgba(20,20,60,.55)}
+dialog::backdrop{background:rgba(37,37,95,.35)}
+.co{padding:20px;display:flex;flex-direction:column;gap:16px}
+.co p{margin:0}
+.co section{display:flex;flex-direction:column;gap:14px}
+.co-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.x{font:inherit;background:none;border:0;cursor:pointer;font-size:22px;line-height:1;color:var(--ink-2);padding:2px 6px;border-radius:4px}
+.x:focus-visible,.method:focus-within{outline:2px solid var(--stamp);outline-offset:2px}
+.co h2{font-family:var(--display);font-weight:400;font-size:1.8rem;line-height:1.1;margin:-6px 0 0;text-wrap:balance}
+.lines{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 0;margin:0;font-size:13.5px}
+.lines dt{font-weight:600}
+.lines dt small{display:block;font-weight:400;font-size:12px;color:var(--ink-2)}
+.lines dd{margin:0;padding-left:14px;text-align:right;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.lines dd sup{font-size:.75em}
+.lines .total{border-top:1px solid var(--ink);padding-top:10px;font-size:15px}
+.lines dd.total{font-size:13.5px;font-weight:500}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px;cursor:pointer}
+.check input{accent-color:var(--ink);margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field input{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--bg);color:var(--ink)}
+.field input:focus{outline:2px solid var(--stamp);outline-offset:1px}
+.methods{display:flex;flex-direction:column;gap:8px}
+.method{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--rule);border-radius:6px;padding:10px 12px;cursor:pointer}
+.method:has(input:checked){border-color:var(--ink);background:var(--wash)}
+.method input{accent-color:var(--ink);margin:3px 0 0}
+.method b{display:block;font-size:14px;font-weight:600}
+.method small{color:var(--ink-2);font-size:12.5px}
+.fine{font-size:12px;color:var(--ink-2)}
+.work{align-items:center;text-align:center;padding-block:28px;font-size:14px}
+.spin{width:30px;height:30px;border:2px solid var(--rule);border-top-color:var(--stamp);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verdict{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--stamp)}
+.verdict.ok{color:var(--ink)}
+.receipt{font-family:var(--mono);font-size:12px;color:var(--ink-2);border-top:1px dashed var(--rule);padding-top:12px}
+.stamp.paid{animation:thunk .35s ease-out}
+@keyframes thunk{from{transform:rotate(-9deg) scale(1.7);opacity:0}to{transform:rotate(-9deg) scale(1);opacity:.9}}
+@media (prefers-reduced-motion: reduce){.row .bar{transition:none}.stamp.paid{animation:none}.spin{animation-duration:3s}}
 @media (max-width:370px){.cert-inner{padding:20px 18px 18px}.cert-method{padding-right:0;padding-bottom:40px}}
 </style>
 
@@ -114,9 +152,11 @@ details[open] summary::after{content:"–"}
       <p class="cert-price" id="price">$5.0 × 10<sup>49</sup></p>
       <p class="cert-compare" id="compare"></p>
       <p class="cert-method" id="method"></p>
-      <div class="stamp">For sale</div>
+      <div class="stamp" id="stamp">For sale</div>
     </div>
   </section>
+
+  <button class="btn" id="buy" type="button">Buy this offset</button>
 
   <section class="controls" aria-label="Settings">
     <fieldset class="group">
@@ -170,6 +210,39 @@ details[open] summary::after{content:"–"}
     </details>
   </div>
 </main>
+
+<dialog id="checkout" aria-labelledby="coTitle">
+  <div class="co">
+    <div class="co-head"><p class="label" id="coStep">Step 1 of 3 · Cart</p><button class="x" id="coClose" type="button" aria-label="Close checkout">×</button></div>
+    <h2 id="coTitle">Your cart</h2>
+
+    <section id="co-cart">
+      <dl class="lines" id="lines"></dl>
+      <label class="check"><input type="checkbox" id="express"> Express delivery: before 2027 (+$2.99)</label>
+      <label class="field"><span class="label">Name on certificate</span><input id="buyer" maxlength="40" placeholder="Anonymous longtermist" autocomplete="off"></label>
+      <p class="fine">Offsets are non-transferable, non-refundable and non-falsifiable.</p>
+      <button class="btn" id="toPay" type="button">Continue to payment</button>
+    </section>
+
+    <section id="co-pay" hidden>
+      <div class="methods" id="methods" role="radiogroup" aria-label="Payment method"></div>
+      <p class="fine">We don't take cards, cash or crypto. Only things that are harder to value.</p>
+      <div class="share"><button class="btn ghost" id="backCart" type="button">Back</button><button class="btn" id="pay" type="button">Pay</button></div>
+    </section>
+
+    <section id="co-work" class="work" hidden aria-live="polite">
+      <div class="spin" aria-hidden="true"></div>
+      <p id="workMsg"></p>
+    </section>
+
+    <section id="co-done" hidden>
+      <p class="verdict" id="verdict"></p>
+      <p id="doneMsg"></p>
+      <p class="receipt" id="receipt"></p>
+      <div class="share"><button class="btn ghost" id="retry" type="button">Try another method</button><button class="btn" id="coDone" type="button">Back to certificate</button></div>
+    </section>
+  </div>
+</dialog>
 
 <script>
 (function(){
@@ -259,7 +332,10 @@ details[open] summary::after{content:"–"}
     $("#amount").textContent = amountText(state.u);
     $("#price").innerHTML = usd(v, true);
     $("#compare").innerHTML = compareText(v, true);
-    $("#method").textContent = `${e.name} · ${e.by}` + (e.mode === "harm" ? ` · ${usd(state.life)}/life` : "");
+    const paid = !!sold && sold.key === certKey();
+    $("#method").textContent = `${e.name} · ${e.by}` + (e.mode === "harm" ? ` · ${usd(state.life)}/life` : "") + (paid ? ` · Issued to ${sold.name}` : "");
+    const st = $("#stamp");
+    if (paid !== st.classList.contains("paid")){ st.textContent = paid ? "Offset" : "For sale"; st.classList.toggle("paid", paid); }
     $("#serial").textContent = serial();
     document.querySelectorAll("#amounts .chip").forEach(c=>c.setAttribute("aria-pressed", Number(c.dataset.u) === state.u));
     document.querySelectorAll("#lives .chip").forEach(c=>c.setAttribute("aria-pressed", Number(c.dataset.life) === state.life));
@@ -272,6 +348,85 @@ details[open] summary::after{content:"–"}
 
   document.querySelectorAll("#amounts .chip").forEach(c=>c.addEventListener("click", ()=>{ state.u = Number(c.dataset.u); render(); }));
   document.querySelectorAll("#lives .chip").forEach(c=>c.addEventListener("click", ()=>{ state.life = Number(c.dataset.life); render(); }));
+
+  // Checkout: a joke flow. Nothing is charged, sent or stored.
+  const dlg = $("#checkout");
+  let sold = null, timer;
+  const certKey = () => state.id + "|" + state.u + "|" + state.life;
+  const money = x => x < 1e6 ? "$" + x.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}) : usd(x, true);
+  const base = () => price(ALL.find(x=>x.id===state.id), state.u);
+  const total = () => base()*1.12 + 49.99 + ($("#express").checked ? 2.99 : 0);
+  const METHODS = [
+    {id:"cone", name:"Your future light cone", sub:"About 10²² stars. Pre-approved.",
+      check:()=>({ok:true, msg:"Your future light cone is now held in escrow. Your descendants have been notified."})},
+    {id:"gpu", name:"10,000 H100-hours", sub:"Worth about $20,000 at current rental prices",
+      check:t=> t <= 2e4 ? {ok:true, msg:"The GPUs will be used to train a model that decides whether this was a good deal."}
+        : {ok:false, msg:`You'd need about ${num(t/2, true)} GPU-hours. Buying that much compute would mean building the thing you're offsetting.`}},
+    {id:"career", name:"One career in AI safety", sub:"40 years at $200k a year, paid in labor",
+      check:t=> t <= 8e6 ? {ok:true, msg:"Report to an AI safety lab Monday at 9am. Bring a laptop and a moderate amount of dread."}
+        : {ok:false, msg:`This would take ${num(t/8e6, true)} careers. You have one.`}},
+    {id:"gdp", name:"World GDP, in yearly installments", sub:"Final payment must land before the Sun dies",
+      check:t=>{
+        const y = t/GDP;
+        if (y < 1/365) return {ok:true, msg:"Paid with less than one day of world GDP. Nobody will notice."};
+        if (y < 1) return {ok:true, msg:`Paid with ${Math.round(y*365)} days of the entire world economy. Some people will notice.`};
+        if (y <= 5e9) return {ok:true, msg:`${num(y, true)} yearly installments of the entire world economy. The first one is due now.`};
+        return {ok:false, msg:`Your final installment would land ${num(y, true)} years from now. The Sun burns out in about 5 billion.`};
+      }}
+  ];
+  $("#methods").innerHTML = METHODS.map((m,i)=>`<label class="method"><input type="radio" name="pm" id="pm-${m.id}" value="${m.id}"${i ? "" : " checked"}><span><b>${m.name}</b><small>${m.sub}</small></span></label>`).join("");
+
+  function step(name, title, label){
+    ["cart","pay","work","done"].forEach(n => $("#co-"+n).hidden = n !== name);
+    $("#coTitle").textContent = title; $("#coStep").textContent = label;
+  }
+  function renderCart(){
+    const e = ALL.find(x=>x.id===state.id), b = base();
+    $("#lines").innerHTML =
+      `<dt>${amountText(state.u)}<small>Priced by ${e.short}</small></dt><dd>${money(b)}</dd>` +
+      `<dt>Moral uncertainty surcharge<small>12%, since the estimates span 50 orders of magnitude</small></dt><dd>${money(b*.12)}</dd>` +
+      `<dt>Discount-rate adjustment<small>Philosophers are still arguing</small></dt><dd>contested</dd>` +
+      `<dt>Extended warranty<small>Void in the event of doom</small></dt><dd>$49.99</dd>` +
+      ($("#express").checked ? `<dt>Express delivery<small>Arrives before 2027</small></dt><dd>$2.99</dd>` : "") +
+      `<dt class="total">Total</dt><dd class="total">${money(total())}</dd>`;
+  }
+  $("#buy").addEventListener("click", ()=>{ clearInterval(timer); renderCart(); step("cart", "Your cart", "Step 1 of 3 · Cart"); dlg.showModal(); });
+  $("#express").addEventListener("change", renderCart);
+  $("#toPay").addEventListener("click", ()=>{ $("#pay").innerHTML = "Pay " + money(total()); step("pay", "Payment", "Step 2 of 3 · Payment"); });
+  $("#backCart").addEventListener("click", ()=> step("cart", "Your cart", "Step 1 of 3 · Cart"));
+  $("#retry").addEventListener("click", ()=> step("pay", "Payment", "Step 2 of 3 · Payment"));
+  $("#coClose").addEventListener("click", ()=> dlg.close());
+  $("#coDone").addEventListener("click", ()=> dlg.close());
+  dlg.addEventListener("close", ()=> clearInterval(timer));
+  $("#pay").addEventListener("click", ()=>{
+    const m = METHODS.find(x => x.id === document.querySelector('input[name="pm"]:checked').value);
+    const verdict = m.check(total());
+    const msgs = ["Consulting the longtermists…", "Discounting the future…", "Checking whether you exist in the cosmic endowment…", "Running it past the shoggoth…"];
+    const per = matchMedia("(prefers-reduced-motion: reduce)").matches ? 350 : 800;
+    let i = 0;
+    step("work", "Processing", "Step 3 of 3 · Processing");
+    $("#workMsg").textContent = msgs[0];
+    clearInterval(timer);
+    timer = setInterval(()=>{
+      if (++i < msgs.length){ $("#workMsg").textContent = msgs[i]; return; }
+      clearInterval(timer);
+      finish(verdict, m);
+    }, per);
+  });
+  function finish(v, m){
+    const name = $("#buyer").value.trim() || "Anonymous longtermist";
+    step("done", v.ok ? "Offset purchased" : "Payment declined", "Receipt");
+    $("#verdict").textContent = v.ok ? "Approved" : "Declined";
+    $("#verdict").classList.toggle("ok", v.ok);
+    $("#doneMsg").innerHTML = v.msg;
+    $("#retry").hidden = v.ok;
+    $("#receipt").hidden = !v.ok;
+    if (v.ok){
+      sold = {key: certKey(), name};
+      $("#receipt").textContent = `${serial()} · ${amountText(state.u)} · issued to ${name} · paid with: ${m.name}`;
+      render();
+    }
+  }
 
   // The classic shoggoth, re-inked as an engraving behind the certificate
   const cv = $("#guilloche"), cert = $("#cert");
