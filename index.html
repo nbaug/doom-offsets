@@ -43,7 +43,6 @@ header p{margin:0;color:var(--ink-2)}
 .cert-compare{font-size:14px;font-weight:600}
 .cert-compare sup{font-size:.7em}
 .cert-method{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-2);padding-right:110px}
-.cert-holder{margin-top:14px!important;display:flex;flex-direction:column;gap:2px;font-family:var(--display);font-size:1.35rem;line-height:1.15;overflow-wrap:anywhere}
 .stamp{position:absolute;right:18px;bottom:16px;transform:rotate(-9deg);border:2px solid var(--stamp);color:var(--stamp);font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border-radius:3px;opacity:.9}
 
 /* Controls */
@@ -154,7 +153,6 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
       <p class="cert-amount" id="amount">1 microdoom</p>
       <p class="cert-price" id="price">$5.0 × 10<sup>49</sup></p>
       <p class="cert-compare" id="compare"></p>
-      <p class="cert-holder" id="holder" hidden><span class="label" id="holderLabel"></span><span id="holderName"></span></p>
       <p class="cert-method" id="method"></p>
       <div class="stamp" id="stamp">For sale</div>
     </div>
@@ -335,10 +333,9 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
     $("#amount").textContent = amountText(state.u);
     $("#price").innerHTML = usd(v, true);
     $("#compare").innerHTML = compareText(v, true);
-    $("#method").textContent = `${e.name} · ${e.by}` + (e.mode === "harm" ? ` · ${usd(state.life)}/life` : "");
     const mine = !!sold && sold.key === certKey(), st = $("#stamp");
-    $("#holder").hidden = !mine;
-    if (mine){ $("#holderLabel").textContent = sold.ok ? "Issued to" : "Attempted by"; $("#holderName").textContent = sold.name; }
+    $("#method").textContent = `${e.name} · ${e.by}` + (e.mode === "harm" ? ` · ${usd(state.life)}/life` : "")
+      + (mine ? ` · ${sold.ok ? "Issued to" : "Attempted by"} ${sold.name}` : "");
     const stampText = !mine ? "For sale" : sold.ok ? "Offset" : "Declined";
     if (st.textContent !== stampText){
       st.textContent = stampText; st.classList.remove("paid");
