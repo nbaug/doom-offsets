@@ -17,10 +17,8 @@
   --display:"Libre Caslon Display","Libre Caslon Text",Georgia,"Times New Roman",serif;
   --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light; /* light only, whatever the viewer's theme */
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1024; --paper:#191A37; --ink:#DEDFF8; --ink-2:#A0A1CB; --rule:#34365F; --wash:#222449; --stamp:#FF7B6C; color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0F1024; --paper:#191A37; --ink:#DEDFF8; --ink-2:#A0A1CB; --rule:#34365F; --wash:#222449; --stamp:#FF7B6C; color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -306,8 +304,6 @@ details[open] summary::after{content:"–"}
     ctx.save(); ctx.translate(dx + dw, dy); ctx.scale(-1, 1); ctx.drawImage(off, 0, 0, dw, dh); ctx.restore(); // mirrored so the smiley clears the price
   }
   if ("ResizeObserver" in window) new ResizeObserver(drawGuilloche).observe(cert);
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", drawGuilloche);
-  new MutationObserver(drawGuilloche).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
 
   renderExperts(); render();
 })();
