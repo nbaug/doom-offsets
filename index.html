@@ -166,6 +166,7 @@ details[open] summary::after{content:"–"}
           <li><a href="https://philpapers.org/archive/THOERP.pdf" target="_blank" rel="noopener">Thorstad, Time of perils</a></li>
           <li><a href="https://forum.effectivealtruism.org/posts/aBAkov3iJNWDWu8qS/thresholds-for-funding-existential-risk-interventions" target="_blank" rel="noopener">Thresholds for funding x-risk interventions</a></li>
           <li><a href="https://forum.effectivealtruism.org/posts/DBDpnAhxvRWmfmtfv/microdooms-averted-by-working-on-ai-safety" target="_blank" rel="noopener">Microdooms averted by working on AI safety</a></li>
+          <li>Shoggoth drawing after <a href="https://x.com/TetraspaceWest" target="_blank" rel="noopener">@TetraspaceWest</a></li>
         </ul>
       </div>
     </details>
@@ -274,85 +275,35 @@ details[open] summary::after{content:"–"}
   document.querySelectorAll("#amounts .chip").forEach(c=>c.addEventListener("click", ()=>{ state.u = Number(c.dataset.u); render(); }));
   document.querySelectorAll("#lives .chip").forEach(c=>c.addEventListener("click", ()=>{ state.life = Number(c.dataset.life); render(); }));
 
-  // Engraved shoggoth holding out a smiley face, behind the certificate
+  // The classic shoggoth, re-inked as an engraving behind the certificate
   const cv = $("#guilloche"), cert = $("#cert");
+  const SHOG = new Image(); SHOG.onload = () => drawGuilloche(); SHOG.src = "data:image/png;base64,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";
   function drawGuilloche(){
     const r = cert.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
     if (!r.width) return;
     cv.width = r.width*dpr; cv.height = r.height*dpr;
     const ctx = cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,r.width,r.height);
+    if (!SHOG.naturalWidth) return;
     const css = getComputedStyle(document.documentElement);
-    const ink = css.getPropertyValue("--ink").trim() || "#25255F";
-    const paper = css.getPropertyValue("--paper").trim() || "#F9F8F4";
-    let seed = state.id.length*97 + Math.round(Math.log10(state.u)*3+9)*13 + 1;
-    const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+    const rgb = (name, fb) => { const h = css.getPropertyValue(name).trim() || fb; return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); };
+    const ink = rgb("--ink", "#25255F"), stamp = rgb("--stamp", "#B5332B");
     const s = Math.min(r.width, 420)/420;
-    const cx = r.width - 70*s, cy = 96*s, R = 74*s;
-    ctx.strokeStyle = ink; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    const ph = [rnd()*6.3, rnd()*6.3, rnd()*6.3];
-    const rad = (t, k) => k*R*(1 + .13*Math.sin(3*t+ph[0]) + .08*Math.sin(5*t+ph[1]) + .05*Math.sin(8*t+ph[2]));
-    const pt = (t, k) => [cx + rad(t,k)*Math.cos(t), cy + rad(t,k)*Math.sin(t)];
-    function blob(k){ ctx.beginPath(); for (let t=0; t<=6.3; t+=.04){ const [x,y] = pt(t,k); t ? ctx.lineTo(x,y) : ctx.moveTo(x,y); } ctx.closePath(); }
-
-    function tendril(sp, w0, w1){
-      const N = sp.length - 1, w = j => (w0*(1 - j/N) + w1)*s;
-      const edge = sgn => sp.map(([x,y,d],j)=>[x + Math.cos(d+sgn*Math.PI/2)*w(j), y + Math.sin(d+sgn*Math.PI/2)*w(j)]);
-      ctx.beginPath(); [...edge(-1), ...edge(1).reverse()].forEach(([x,y],k)=> k ? ctx.lineTo(x,y) : ctx.moveTo(x,y)); ctx.fill();
+    const dw = 236*s, dh = dw*SHOG.naturalHeight/SHOG.naturalWidth, dx = r.width - dw - 4*s, dy = 14*s;
+    // Rasterize at device resolution, then re-ink by colour: black outline, hatched green body, red blush
+    const W = Math.round(dw*dpr), H = Math.round(dh*dpr);
+    const off = document.createElement("canvas"); off.width = W; off.height = H;
+    const o = off.getContext("2d"); o.drawImage(SHOG, 0, 0, W, H);
+    const img = o.getImageData(0, 0, W, H), d = img.data, gap = Math.max(3, Math.round(3.4*dpr));
+    for (let y=0; y<H; y++) for (let x=0; x<W; x++){
+      const i = (y*W + x)*4, R = d[i], G = d[i+1], B = d[i+2];
+      const line = 1 - Math.max(R,G,B)/255, body = Math.max(0, G - Math.max(R,B))/255, blush = Math.max(0, Math.min(R,B) - G)/255;
+      const hatched = (x + y) % gap < dpr*.9;
+      const c = blush > .3 ? stamp : ink;
+      d[i] = c[0]; d[i+1] = c[1]; d[i+2] = c[2];
+      d[i+3] = 255*Math.min(1, line*.36 + body*(hatched ? .16 : .035) + blush*.35);
     }
-
-    // Tentacles: smooth tapered silhouettes with curled tips, drawn first so the body covers their roots
-    ctx.globalAlpha = .14; ctx.fillStyle = ink;
-    for (let i=0, n=9; i<n; i++){
-      const a = Math.PI*(.3 + 1.1*i/(n-1)) + (rnd()-.5)*.25;
-      let [x,y] = pt(a, .85), d = a;
-      const L = R*(1 + rnd()*.9), N = 40, f = 1.5 + rnd()*2, p = rnd()*6.3, curl = rnd() < .5 ? -1 : 1, sp = [];
-      for (let j=0; j<=N; j++){
-        const t = j/N; sp.push([x,y,d]);
-        d += Math.sin(t*f*Math.PI + p)*.08 + curl*Math.max(0,(t-.6)/.4)**2*.45;
-        const step = L/N*(1 - .5*t); x += Math.cos(d)*step; y += Math.sin(d)*step;
-      }
-      tendril(sp, 1.8, .25);
-    }
-
-    // Body: engraved contour lines
-    ctx.globalAlpha = 1; ctx.fillStyle = paper; blob(1); ctx.fill();
-    ctx.lineWidth = .7;
-    [1,.88,.76,.64,.52,.4,.28].forEach((k,i)=>{ ctx.globalAlpha = i ? .09 : .16; blob(k); ctx.stroke(); });
-
-    // Eyes all over the body
-    const mx = cx - 1.28*R, my = cy + .3*R, mr = .28*R;
-    for (let i=0, placed=0; i<90 && placed<24; i++){
-      const t = rnd()*6.3, k = Math.sqrt(rnd())*.84;
-      const [ex,ey] = pt(t,k), er = (2 + 6.5*rnd()**1.6)*s;
-      if (Math.hypot(ex-mx, ey-my) < mr + er + 3*s) continue;
-      placed++;
-      ctx.globalAlpha = 1; ctx.fillStyle = paper; ctx.beginPath(); ctx.arc(ex,ey,er,0,6.3); ctx.fill();
-      ctx.globalAlpha = .22; ctx.lineWidth = .8; ctx.stroke();
-      const pa = rnd()*6.3;
-      ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(ex+Math.cos(pa)*er*.3, ey+Math.sin(pa)*er*.3, er*.42, 0, 6.3); ctx.fill();
-    }
-
-    // One tentacle reaches out toward the viewer, holding up the smiley face
-    const [hx,hy] = pt(Math.PI*.82, .6), hold = [];
-    const c1 = [cx - .9*R, cy + .75*R], c2 = [mx + .2*R, my + .7*R];
-    for (let j=0; j<=40; j++){
-      const t = j/40, u = 1-t;
-      const x = u**3*hx + 3*u*u*t*c1[0] + 3*u*t*t*c2[0] + t**3*mx, y = u**3*hy + 3*u*u*t*c1[1] + 3*u*t*t*c2[1] + t**3*my;
-      const dx = 3*u*u*(c1[0]-hx) + 6*u*t*(c2[0]-c1[0]) + 3*t*t*(mx-c2[0]), dy = 3*u*u*(c1[1]-hy) + 6*u*t*(c2[1]-c1[1]) + 3*t*t*(my-c2[1]);
-      hold.push([x, y, Math.atan2(dy, dx)]);
-    }
-    ctx.globalAlpha = .24; ctx.fillStyle = ink; tendril(hold, 2.6, 1.4);
-
-    // The smiley face on its tip
-    ctx.save(); ctx.translate(mx,my); ctx.rotate(-.18);
-    ctx.globalAlpha = 1; ctx.fillStyle = paper; ctx.beginPath(); ctx.arc(0,0,mr,0,6.3); ctx.fill();
-    ctx.globalAlpha = .42; ctx.lineWidth = 1.3*s; ctx.stroke();
-    ctx.beginPath(); ctx.arc(0,0,mr*.9,0,6.3); ctx.globalAlpha = .15; ctx.lineWidth = .6; ctx.stroke();
-    ctx.globalAlpha = .5; ctx.lineWidth = 1.5*s;
-    [-1,1].forEach(side=>{ ctx.beginPath(); ctx.arc(side*mr*.34, -mr*.14, mr*.14, Math.PI*1.1, Math.PI*1.9); ctx.stroke(); });
-    ctx.beginPath(); ctx.arc(0, mr*.02, mr*.5, Math.PI*.18, Math.PI*.82); ctx.stroke();
-    ctx.restore();
-    ctx.globalAlpha = 1;
+    o.putImageData(img, 0, 0);
+    ctx.save(); ctx.translate(dx + dw, dy); ctx.scale(-1, 1); ctx.drawImage(off, 0, 0, dw, dh); ctx.restore(); // mirrored so the smiley clears the price
   }
   if ("ResizeObserver" in window) new ResizeObserver(drawGuilloche).observe(cert);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", drawGuilloche);
