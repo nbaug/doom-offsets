@@ -369,7 +369,7 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
         if (y < 1/365) return "Paid with less than one day of world GDP. Nobody will notice.";
         if (y < 1) return `Paid with ${Math.round(y*365)} days of the entire world economy. Some people will notice.`;
         return `${num(y, true)} yearly installments of the entire world economy. The first one is due now.`; }},
-    {id:"cone", name:"Your future light cone", sub:"Every star and descendant you could ever have. Always enough.", cap:Infinity,
+    {id:"cone", name:"Your future light cone", sub:"Every star and descendant you could ever have.", cap:Infinity,
       yes:"Your future light cone is now held in escrow. Your descendants have been notified."}
   ];
   function renderMethods(){
