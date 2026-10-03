@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Carbon offsets, but for AI takeover risk. Pick whose math sets the price.">
+<meta property="og:title" content="Doom Offset Credits">
+<meta property="og:description" content="Carbon offsets, but for AI takeover risk. Same risk, 50 orders of magnitude apart.">
+<meta name="twitter:card" content="summary">
+<title>Doom Offset Credits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow phone-first column. Certificate first, three compact controls, then the comparison ladder. Everything explanatory lives in collapsibles. */
+:root{
+  --bg:#E6E8EE; --paper:#F9F8F4; --ink:#25255F; --ink-2:#5C5D88; --rule:#C8C9DA; --wash:#EDECF5; --stamp:#B5332B;
+  --display:"Libre Caslon Display","Libre Caslon Text",Georgia,"Times New Roman",serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1024; --paper:#191A37; --ink:#DEDFF8; --ink-2:#A0A1CB; --rule:#34365F; --wash:#222449; --stamp:#FF7B6C; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1024; --paper:#191A37; --ink:#DEDFF8; --ink-2:#A0A1CB; --rule:#34365F; --wash:#222449; --stamp:#FF7B6C; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:32rem;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:24px}
+a{color:var(--ink)}
+h1{font-family:var(--display);font-weight:400;margin:0;font-size:clamp(2.2rem,9vw,2.8rem);line-height:1}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+header{display:flex;flex-direction:column;gap:6px}
+header p{margin:0;color:var(--ink-2)}
+
+/* Certificate */
+.cert{position:relative;background:var(--paper);border:1px solid var(--ink);border-radius:4px;overflow:hidden;box-shadow:0 18px 40px -26px rgba(20,20,60,.5)}
+.cert canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cert::before{content:"";position:absolute;inset:7px;border:1px solid var(--rule);border-radius:2px;pointer-events:none}
+.cert-inner{position:relative;padding:24px 24px 22px;display:flex;flex-direction:column;gap:4px}
+.cert-top{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);padding-bottom:12px;border-bottom:1px solid var(--rule);margin-bottom:14px}
+.cert p{margin:0}
+.cert-amount{font-family:var(--display);font-size:clamp(1.5rem,6.5vw,1.9rem);line-height:1.1;margin-bottom:12px!important}
+.cert-price{font-family:var(--display);font-size:clamp(2.5rem,12vw,3.6rem);line-height:1.02;font-variant-numeric:tabular-nums}
+.cert-price sup,.val sup{font-size:.5em;vertical-align:.9em;line-height:0}
+.cert-compare{font-size:14px;font-weight:600}
+.cert-compare sup{font-size:.7em}
+.cert-method{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-2);padding-right:110px}
+.stamp{position:absolute;right:18px;bottom:16px;transform:rotate(-9deg);border:2px solid var(--stamp);color:var(--stamp);font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border-radius:3px;opacity:.9}
+
+/* Controls */
+.controls{display:flex;flex-direction:column;gap:18px}
+.group{display:flex;flex-direction:column;gap:8px;border:0;margin:0;padding:0;min-width:0}
+.group legend{padding:0;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;font-weight:500;background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:999px;padding:7px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip:focus-visible,.btn:focus-visible,.row:focus-visible,summary:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink);border-radius:6px;overflow:hidden}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{display:block;padding:9px 8px;text-align:center;font-size:13.5px;font-weight:600}
+.seg label+label span{border-left:1px solid var(--ink)}
+.seg input:checked+span{background:var(--ink);color:var(--paper)}
+.seg input:focus-visible+span{outline:2px solid var(--stamp);outline-offset:-4px}
+.life{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+.life .seg{flex:1}
+.life .seg span{padding:6px 8px;font-size:12.5px}
+
+/* Ladder */
+.ladder-card{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:16px 16px 12px;display:flex;flex-direction:column;gap:10px}
+.ladder{display:flex;flex-direction:column;gap:8px}
+.row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:3px 10px;cursor:pointer;padding:4px 6px;margin:0 -6px;border-radius:4px}
+.row.sel{background:var(--wash)}
+.row .nm{font-size:13px;font-weight:600;min-width:0}
+.row .val{font-family:var(--mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.row .track{grid-column:1/-1;height:7px;background:var(--wash);border-radius:2px;position:relative;overflow:hidden}
+.row.sel .track{background:var(--bg)}
+.row .bar{position:absolute;left:0;top:0;bottom:0;background:var(--ink-2);border-radius:2px;transition:width .35s ease}
+.row.harm .bar{background:var(--ink)}
+.row.sel .bar{background:var(--stamp)}
+.row.ref{cursor:default}
+.row.ref .nm{font-weight:400;color:var(--ink-2)}
+.row.ref .bar{background:repeating-linear-gradient(90deg,var(--ink-2) 0 4px,transparent 4px 7px)}
+.axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-2);border-top:1px solid var(--rule);padding-top:6px}
+.axis sup{font-size:.8em}
+
+.share{display:flex;gap:8px}
+.btn{flex:1;justify-content:center;font:inherit;font-weight:600;font-size:14px;padding:11px 16px;border-radius:6px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;cursor:pointer;display:inline-flex;align-items:center}
+.btn.ghost{background:transparent;color:var(--ink)}
+
+/* Collapsibles */
+details{border-top:1px solid var(--rule);padding-block:12px}
+summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);font-weight:400;color:var(--ink-2);font-size:16px}
+details[open] summary::after{content:"–"}
+.more{font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:8px;padding-top:10px}
+.more p{margin:0}
+.more ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.more b{color:var(--ink);font-weight:600}
+@media (prefers-reduced-motion: reduce){.row .bar{transition:none}}
+@media (max-width:370px){.cert-inner{padding:20px 18px 18px}.cert-method{padding-right:0;padding-bottom:40px}}
+</style>
+
+<main class="wrap">
+  <header>
+    <h1>Doom Offset Credits</h1>
+    <p>Carbon offsets, for AI takeover risk.</p>
+  </header>
+
+  <section class="cert" id="cert" aria-label="Offset certificate">
+    <canvas id="guilloche" aria-hidden="true"></canvas>
+    <div class="cert-inner">
+      <div class="cert-top"><span>Risk offset certificate</span><span id="serial">No. DO-000000</span></div>
+      <p class="cert-amount" id="amount">1 microdoom</p>
+      <p class="cert-price" id="price">$5.0 × 10<sup>49</sup></p>
+      <p class="cert-compare" id="compare"></p>
+      <p class="cert-method" id="method"></p>
+      <div class="stamp">For sale</div>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Settings">
+    <fieldset class="group">
+      <legend class="label">Amount</legend>
+      <div class="chips" id="amounts">
+        <button class="chip" data-u="0.01" type="button">0.01 µdoom</button>
+        <button class="chip" data-u="1" type="button">1 µdoom</button>
+        <button class="chip" data-u="100" type="button">100 µdoom</button>
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="label">Whose math</legend>
+      <div class="chips" id="experts" role="group" aria-label="Whose math"></div>
+    </fieldset>
+
+    <fieldset class="group" id="lifeField">
+      <legend class="label">Value per life</legend>
+      <div class="chips" id="lives">
+        <button class="chip" data-life="5000" type="button">$5,000 · GiveWell</button>
+        <button class="chip" data-life="13000000" type="button">$13M · US gov</button>
+      </div>
+    </fieldset>
+  </section>
+
+  <div>
+    <details>
+      <summary>What's a microdoom?</summary>
+      <div class="more">
+        <p>A one-in-a-million chance of existential catastrophe. 100 µdoom is one basis point (0.01%).</p>
+      </div>
+    </details>
+    <details>
+      <summary>Whose math is this?</summary>
+      <div class="more" id="expertNotes"></div>
+    </details>
+    <details>
+      <summary>Caveats &amp; sources</summary>
+      <div class="more">
+        <p>Prices are the full expected harm, like carbon's social cost. Real carbon offsets are priced at the cost of removal, which for x-risk funders put at roughly $2.5M to $20B per basis point.</p>
+        <p>Thorstad argues high per-century risk caps the value of reducing risk now at about one extra century of humanity. Some safety work may also speed up capabilities.</p>
+        <ul>
+          <li><a href="https://existential-risk.com/concept.pdf" target="_blank" rel="noopener">Bostrom (2013)</a></li>
+          <li><a href="https://www.globalprioritiesinstitute.org/wp-content/uploads/Shulman-and-Thornley-How-much-should-governments-pay-to-prevent-catastrophes-longtermisms-limited-role.pdf" target="_blank" rel="noopener">Shulman &amp; Thornley</a></li>
+          <li><a href="https://philpapers.org/archive/THOERP.pdf" target="_blank" rel="noopener">Thorstad, Time of perils</a></li>
+          <li><a href="https://forum.effectivealtruism.org/posts/aBAkov3iJNWDWu8qS/thresholds-for-funding-existential-risk-interventions" target="_blank" rel="noopener">Thresholds for funding x-risk interventions</a></li>
+          <li><a href="https://forum.effectivealtruism.org/posts/DBDpnAhxvRWmfmtfv/microdooms-averted-by-working-on-ai-safety" target="_blank" rel="noopener">Microdooms averted by working on AI safety</a></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</main>
+
+<script>
+(function(){
+  const GDP = 1.15e14; // approx. annual world GDP
+  const EXPERTS = {
+    harm: [
+      {id:"present", name:"People alive today", by:"Shulman & Thornley", short:"present-people cost-benefit math", lives:8.2e9, note:"Counts only the 8.2 billion people alive now."},
+      {id:"thorstad", name:"Pessimist", by:"Thorstad", short:"Thorstad's pessimist cap", lives:4.4e10, note:"At 20% risk per century, the future is worth about 4 centuries of humanity."},
+      {id:"earth", name:"Earth-bound", by:"Bostrom", short:"Bostrom's Earth-bound math", lives:1e16, note:"10¹⁶ lives: humanity lasts as long as Earth stays habitable."},
+      {id:"cosmic", name:"Cosmic", by:"Bostrom", short:"Bostrom's cosmic-endowment math", lives:1e52, note:"10⁵² lives: digital minds settle the reachable universe."}
+    ],
+    abate: [
+      {id:"rp", name:"Rethink Priorities", by:"RP model", short:"Rethink Priorities' defaults", bp:2.5e6, range:[1.6e6,4e6], note:"$1.6M–$4M per basis point, from their cross-cause model defaults."},
+      {id:"thresh", name:"GiveWell parity", by:"EA Forum", short:"a GiveWell-parity threshold", bp:5.4e6, note:"$5.4M per basis point, matching the bar for top global health charities."},
+      {id:"linch", name:"Funder gut check", by:"Linch Zhang", short:"a grantmaker's gut check", bp:3.16e8, range:[1e8,1e9], note:"$100M–$1B per basis point, based on the grants actually available."},
+      {id:"op", name:"Open Phil", by:"Open Philanthropy", short:"Open Phil's $200T-per-world bar", bp:2e10, note:"$20B per basis point ($200T per world saved). Now Coefficient Giving."}
+    ]
+  };
+  const ALL = [...EXPERTS.harm.map(e=>({...e,mode:"harm"})), ...EXPERTS.abate.map(e=>({...e,mode:"abate"}))];
+  const state = {u:1, mode:"harm", id:"cosmic", life:5000};
+  const $ = s => document.querySelector(s);
+
+  const SUP = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻"};
+  const sup = n => String(n).split("").map(c=>SUP[c]||c).join("");
+  function sci(x, html){
+    let e = Math.floor(Math.log10(x)), m = x/Math.pow(10,e);
+    if (m >= 9.95){ m = 1; e += 1; }
+    return html ? `${m.toFixed(1)} × 10<sup>${e}</sup>` : `${m.toFixed(1)}×10${sup(e)}`;
+  }
+  function num(x, html){
+    if (x < 10) return (Math.round(x*100)/100).toLocaleString("en-US");
+    if (x < 1e6) return Math.round(x).toLocaleString("en-US");
+    if (x < 1e18){
+      for (const [v,w] of [[1e15,"quadrillion"],[1e12,"trillion"],[1e9,"billion"],[1e6,"million"]])
+        if (x >= v) return `${(x/v).toFixed(x/v < 10 ? 1 : 0)} ${w}`;
+    }
+    return sci(x, html);
+  }
+  const usd = (x, html) => "$" + num(x, html);
+  const price = (e, u) => e.mode === "harm" ? u*1e-6*e.lives*state.life : (u/100)*e.bp;
+  function compareText(v, html){
+    if (v >= GDP) return `≈ ${num(v/GDP, html)} years of world GDP`;
+    const ry = v/2e5;
+    return ry < 1 ? "Less than a year of a $200k salary" : `≈ ${num(ry, html)} years of a $200k salary`;
+  }
+  const amountText = u => `${u} ${u === 1 ? "microdoom" : "microdooms"}`;
+  function serial(){
+    let h = 2166136261; const s = state.id + state.u + state.life;
+    for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); }
+    return "No. DO-" + String((h>>>0)%1000000).padStart(6,"0");
+  }
+
+  function renderExperts(){
+    const box = $("#experts"); box.innerHTML = "";
+    EXPERTS[state.mode].forEach(e=>{
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = e.name;
+      b.setAttribute("aria-pressed", e.id === state.id);
+      b.addEventListener("click", ()=>{ state.id = e.id; renderExperts(); render(); });
+      box.appendChild(b);
+    });
+    $("#lifeField").hidden = state.mode !== "harm";
+  }
+
+  function renderLadder(){
+    const rows = ALL.map(e=>({e, v:price(e,state.u)}));
+    rows.push({ref:true, name:"World GDP, one year", v:GDP});
+    rows.sort((a,b)=>b.v-a.v);
+    const box = $("#ladder"); box.innerHTML = "";
+    rows.forEach(r=>{
+      const w = Math.max(0.6, Math.min(100, Math.log10(Math.max(r.v,1))/60*100));
+      const el = document.createElement(r.ref ? "div" : "button");
+      if (!r.ref) el.type = "button";
+      el.className = "row " + (r.ref ? "ref" : r.e.mode) + (!r.ref && r.e.id === state.id ? " sel" : "");
+      el.innerHTML = `<span class="nm">${r.ref ? r.name : r.e.name}</span><span class="val">${usd(r.v, true)}</span><span class="track"><span class="bar" style="width:${w}%"></span></span>`;
+      if (!r.ref){
+        el.setAttribute("aria-pressed", r.e.id === state.id);
+        el.addEventListener("click", ()=>{ state.mode = r.e.mode; state.id = r.e.id; $("#mode-"+r.e.mode).checked = true; renderExperts(); render(); });
+      }
+      box.appendChild(el);
+    });
+  }
+
+  function render(){
+    const e = ALL.find(x=>x.id===state.id);
+    const v = price(e, state.u);
+    $("#amount").textContent = amountText(state.u);
+    $("#price").innerHTML = usd(v, true);
+    $("#compare").innerHTML = compareText(v, true);
+    $("#method").textContent = `${e.name} · ${e.by}` + (e.mode === "harm" ? ` · ${usd(state.life)}/life` : "");
+    $("#serial").textContent = serial();
+    document.querySelectorAll("#amounts .chip").forEach(c=>c.setAttribute("aria-pressed", Number(c.dataset.u) === state.u));
+    document.querySelectorAll("#lives .chip").forEach(c=>c.setAttribute("aria-pressed", Number(c.dataset.life) === state.life));
+    drawGuilloche();
+  }
+
+  $("#expertNotes").innerHTML =
+    "<ul>" + EXPERTS.harm.map(e=>`<li><b>${e.name}</b> (${e.by}): ${e.note}</li>`).join("") + "</ul>" +
+    "<p>Per life: $5,000 is GiveWell's rough cost to save one. $13M is roughly the value of a statistical life US agencies use in cost-benefit analysis.</p>";
+
+  document.querySelectorAll("#amounts .chip").forEach(c=>c.addEventListener("click", ()=>{ state.u = Number(c.dataset.u); render(); }));
+  document.querySelectorAll("#lives .chip").forEach(c=>c.addEventListener("click", ()=>{ state.life = Number(c.dataset.life); render(); }));
+
+  // Security-paper rosette behind the certificate
+  const cv = $("#guilloche"), cert = $("#cert");
+  function drawGuilloche(){
+    const r = cert.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    if (!r.width) return;
+    cv.width = r.width*dpr; cv.height = r.height*dpr;
+    const ctx = cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,r.width,r.height);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#25255F";
+    ctx.lineWidth = .6;
+    const seed = state.id.length + Math.round(Math.log10(state.u)*3+9);
+    function rosette(cx, cy, R, rr, d, alpha){
+      ctx.globalAlpha = alpha; ctx.beginPath();
+      for (let t=0; t<=Math.PI*2*rr; t+=0.01){
+        const x = cx + (R-rr)*Math.cos(t) + d*Math.cos((R-rr)/rr*t);
+        const y = cy + (R-rr)*Math.sin(t) - d*Math.sin((R-rr)/rr*t);
+        t===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    const s = Math.min(r.width, 420)/420;
+    rosette(r.width-40*s, 70*s, 150*s, (7+seed%5)*s, 70*s, .09);
+    rosette(r.width-40*s, 70*s, 110*s, 5*s, 48*s, .07);
+    ctx.globalAlpha = 1;
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(drawGuilloche).observe(cert);
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", drawGuilloche);
+  new MutationObserver(drawGuilloche).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+
+  renderExperts(); render();
+})();
+</script>
