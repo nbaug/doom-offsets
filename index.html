@@ -124,7 +124,9 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
 .method:has(input:checked){border-color:var(--ink);background:var(--wash)}
 .method input{accent-color:var(--ink);margin:3px 0 0}
 .method b{display:block;font-size:14px;font-weight:600}
-.method small{color:var(--ink-2);font-size:12.5px}
+.method small{display:block;color:var(--ink-2);font-size:12.5px}
+.method .cover{margin-top:4px;font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+.method.short .cover{color:var(--stamp)}
 .fine{font-size:12px;color:var(--ink-2)}
 .work{align-items:center;text-align:center;padding-block:28px;font-size:14px}
 .spin{width:30px;height:30px;border:2px solid var(--rule);border-top-color:var(--stamp);border-radius:50%;animation:spin .8s linear infinite}
@@ -355,26 +357,28 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
   const certKey = () => state.id + "|" + state.u + "|" + state.life;
   const money = x => x < 1e6 ? "$" + x.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}) : usd(x, true);
   const base = () => price(ALL.find(x=>x.id===state.id), state.u);
-  const total = () => base()*1.12 + 49.99 + ($("#express").checked ? 2.99 : 0);
+  const total = () => base() + 49.99 + ($("#express").checked ? 2.99 : 0);
+  // Payment methods, smallest to largest. Each shows up front whether it covers the total.
   const METHODS = [
-    {id:"cone", name:"Your future light cone", sub:"About 10²² stars. Pre-approved.",
-      check:()=>({ok:true, msg:"Your future light cone is now held in escrow. Your descendants have been notified."})},
-    {id:"gpu", name:"10,000 H100-hours", sub:"Worth about $20,000 at current rental prices",
-      check:t=> t <= 2e4 ? {ok:true, msg:"The GPUs will be used to train a model that decides whether this was a good deal."}
-        : {ok:false, msg:`You'd need about ${num(t/2, true)} GPU-hours. Buying that much compute would mean building the thing you're offsetting.`}},
-    {id:"career", name:"One career in AI safety", sub:"40 years at $200k a year, paid in labor",
-      check:t=> t <= 8e6 ? {ok:true, msg:"Report to an AI safety lab Monday at 9am. Bring a laptop and a moderate amount of dread."}
-        : {ok:false, msg:`This would take ${num(t/8e6, true)} careers. You have one.`}},
-    {id:"gdp", name:"World GDP, in yearly installments", sub:"Final payment must land before the Sun dies",
-      check:t=>{
-        const y = t/GDP;
-        if (y < 1/365) return {ok:true, msg:"Paid with less than one day of world GDP. Nobody will notice."};
-        if (y < 1) return {ok:true, msg:`Paid with ${Math.round(y*365)} days of the entire world economy. Some people will notice.`};
-        if (y <= 5e9) return {ok:true, msg:`${num(y, true)} yearly installments of the entire world economy. The first one is due now.`};
-        return {ok:false, msg:`Your final installment would land ${num(y, true)} years from now. The Sun burns out in about 5 billion.`};
-      }}
+    {id:"career", name:"One career in AI safety", sub:"40 years at $200k a year, paid in labor", cap:8e6,
+      short:t=>`Not enough: this would take ${num(t/8e6, true)} careers. You have one.`,
+      yes:"Report to an AI safety lab Monday at 9am. Bring a laptop and a moderate amount of dread."},
+    {id:"gdp", name:"World GDP, in yearly installments", sub:"The final payment has to land before the Sun burns out, in about 5 billion years", cap:5e9*GDP,
+      short:t=>`Not enough: your final installment would land ${num(t/GDP, true)} years from now.`,
+      yes:t=>{ const y = t/GDP;
+        if (y < 1/365) return "Paid with less than one day of world GDP. Nobody will notice.";
+        if (y < 1) return `Paid with ${Math.round(y*365)} days of the entire world economy. Some people will notice.`;
+        return `${num(y, true)} yearly installments of the entire world economy. The first one is due now.`; }},
+    {id:"cone", name:"Your future light cone", sub:"Every star and descendant you could ever have. Always enough.", cap:Infinity,
+      yes:"Your future light cone is now held in escrow. Your descendants have been notified."}
   ];
-  $("#methods").innerHTML = METHODS.map((m,i)=>`<label class="method"><input type="radio" name="pm" id="pm-${m.id}" value="${m.id}"${i ? "" : " checked"}><span><b>${m.name}</b><small>${m.sub}</small></span></label>`).join("");
+  function renderMethods(){
+    const t = total(), pick = METHODS.find(m => t <= m.cap);
+    $("#methods").innerHTML = METHODS.map(m=>{
+      const ok = t <= m.cap, note = ok ? (m.cap === Infinity ? "" : "Covers your total.") : m.short(t);
+      return `<label class="method${ok ? "" : " short"}"><input type="radio" name="pm" id="pm-${m.id}" value="${m.id}"${m === pick ? " checked" : ""}><span><b>${m.name}</b><small>${m.sub}</small>${note ? `<small class="cover">${note}</small>` : ""}</span></label>`;
+    }).join("");
+  }
 
   function step(name, title, label){
     ["cart","pay","work","done"].forEach(n => $("#co-"+n).hidden = n !== name);
@@ -384,15 +388,13 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
     const e = ALL.find(x=>x.id===state.id), b = base();
     $("#lines").innerHTML =
       `<dt>${amountText(state.u)}<small>Priced by ${e.short}</small></dt><dd>${money(b)}</dd>` +
-      `<dt>Moral uncertainty surcharge<small>12%, since the estimates span 50 orders of magnitude</small></dt><dd>${money(b*.12)}</dd>` +
-      `<dt>Discount-rate adjustment<small>Philosophers are still arguing</small></dt><dd>contested</dd>` +
       `<dt>Extended warranty<small>Void in the event of doom</small></dt><dd>$49.99</dd>` +
       ($("#express").checked ? `<dt>Express delivery<small>Arrives before 2027</small></dt><dd>$2.99</dd>` : "") +
       `<dt class="total">Total</dt><dd class="total">${money(total())}</dd>`;
   }
   $("#buy").addEventListener("click", ()=>{ clearInterval(timer); renderCart(); step("cart", "Your cart", "Step 1 of 3 · Cart"); dlg.showModal(); });
   $("#express").addEventListener("change", renderCart);
-  $("#toPay").addEventListener("click", ()=>{ $("#pay").innerHTML = "Pay " + money(total()); step("pay", "Payment", "Step 2 of 3 · Payment"); });
+  $("#toPay").addEventListener("click", ()=>{ renderMethods(); $("#pay").innerHTML = "Pay " + money(total()); step("pay", "Payment", "Step 2 of 3 · Payment"); });
   $("#backCart").addEventListener("click", ()=> step("cart", "Your cart", "Step 1 of 3 · Cart"));
   $("#retry").addEventListener("click", ()=> step("pay", "Payment", "Step 2 of 3 · Payment"));
   $("#coClose").addEventListener("click", ()=> dlg.close());
@@ -400,7 +402,7 @@ dialog::backdrop{background:rgba(37,37,95,.35)}
   dlg.addEventListener("close", ()=> clearInterval(timer));
   $("#pay").addEventListener("click", ()=>{
     const m = METHODS.find(x => x.id === document.querySelector('input[name="pm"]:checked').value);
-    const verdict = m.check(total());
+    const t = total(), verdict = t <= m.cap ? {ok:true, msg: typeof m.yes === "function" ? m.yes(t) : m.yes} : {ok:false, msg: m.short(t).replace("Not enough: ", "")};
     const msgs = ["Consulting the longtermists…", "Discounting the future…", "Checking whether you exist in the cosmic endowment…", "Running it past the shoggoth…"];
     const per = matchMedia("(prefers-reduced-motion: reduce)").matches ? 350 : 800;
     let i = 0;
